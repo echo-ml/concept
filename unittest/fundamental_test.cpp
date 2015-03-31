@@ -1,10 +1,12 @@
 #include <echo/concept/fundamental.h>
 #include <echo/test.h>
 #include <memory>
+#include <iostream>
 
-using namespace echo;
+using namespace echo::concept;
 
-TEST_CASE("copyable") {
-  REQUIRE(concept::copyable<double>());
-  REQUIRE(!concept::copyable<std::unique_ptr<double>>());
+
+TEST_CASE("fundamental") {
+  REQUIRE(copyable<double>());
+  REQUIRE(!copyable<std::unique_ptr<double>>());
 }

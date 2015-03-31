@@ -1,6 +1,6 @@
 #pragma once
 
-#include <echo/concept/fundamental.h>
+#include <echo/concept/concept.h>
 
 namespace echo {
 namespace concept {
@@ -9,17 +9,38 @@ namespace concept {
 // allocatable //
 /////////////////
 
-CONCEPT(allocator) {
-  template <class Allocator>
-  auto require(Allocator alloc)
-      ->valid<decltype(alloc.allocate(0)),
-              decltype(alloc.deallocate(nullptr, 0)),
-              has_type<typename Allocator::value_type>,
-              has_type<typename Allocator::pointer>,
-              has_type<typename Allocator::const_pointer>,
-              has_type<typename Allocator::reference>,
-              has_type<typename Allocator::const_reference> >;
+namespace detail { namespace allocator {
+
+struct Allocator : Concept {
+  template <class T>
+  auto require(T&& alloc) ->list<
+    valid<typename T::value_type>(),
+    same<typename T::value_type&, decltype(*typename std::allocator_traits<T>::pointer())>(),
+    valid<decltype(alloc.allocate(0))>(),
+    valid<decltype(alloc.deallocate(nullptr, 0))>()
+
+    // valid<std::allocator_traits<
+    // valid<typename T::value_type>(),
+    // valid<typename T::po>(),
+    // valid<typename T::value_type>(),
+
+  >;
+  // valid<decltype(alloc.allocate(0))>()
+  // >;
+      // -> list<valid<decltype(alloc.allocate(0))>,
+      //         valid<decltype(alloc.deallocate(nullptr, 0))>,
+      //         valid<typename T::value_type>, valid<typename T::pointer>,
+      //         valid<typename T::const_pointer>, valid<typename T::reference>,
+      //         valid<typename T::const_reference>>;
 };
+
+} //end namespace allocator
+} //end namespace detail
+
+template<class T>
+constexpr bool allocator() {
+  return models<detail::allocator::Allocator, T>();
+}
 
 }  // end namespace concept
 }  // end namespace echo
