@@ -22,22 +22,10 @@ class Concept {
     return true;
   }
 
-  //has_type
-  template <class A, class Expr>
-  static constexpr bool has_type(Expr&&) {
-    return std::is_same<A, typename std::decay<Expr>::type>();
-  }
-
   //same
   template <class A, class B>
   static constexpr bool same() {
     return std::is_same<A, B>();
-  }
-
-  //convertible_to
-  template <class A, class Expr>
-  static constexpr bool convertible_to(Expr&&) {
-    return std::is_convertible<A, Expr>();
   }
 
   //convertible

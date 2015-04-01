@@ -9,4 +9,5 @@ using namespace echo::concept;
 TEST_CASE("fundamental") {
   REQUIRE(copyable<double>());
   REQUIRE(!copyable<std::unique_ptr<double>>());
+  REQUIRE(nullable_pointer<int*>());
 }

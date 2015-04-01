@@ -1,6 +1,7 @@
 #pragma once
 
 #include <echo/concept/fundamental.h>
+#include <echo/concept/iterator_traits.h>
 
 #include <iterator>
 #include <type_traits>
@@ -8,100 +9,248 @@
 namespace echo {
 namespace concept {
 
+//////////////
+// Readable //
+//////////////
+
 namespace detail {
 namespace iterator {
 
 struct Readable : Concept {
   template <class T>
   auto require(T&& x) -> list<
-      semiregular<T>(),
-      same<typename std::iterator_traits<T>::reference, decltype(*x)>()>;
+      semiregular<T>(), same<iterator_traits::reference<T>, decltype(*x)>()>;
 };
 
-} //end namespace iterator
-} //end namespace detail
+}  // end namespace iterator
+}  // end namespace detail
 
-// CONCEPT(readable, semi_regular<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<decltype(
-//           returns<typename std::iterator_traits<T>::reference>(*x))>;
-// };
-//
-// CONCEPT(writable, semi_regular<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<decltype(
-//           *x = std::declval<typename std::iterator_traits<T>::value_type>())>;
-// };
-//
-// CONCEPT(weakly_incrementable, semi_regular<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<has_type<typename std::iterator_traits<T>::difference_type,
-//                        std::is_integral<_>>,
-//               decltype(returns<T&>(++x)), decltype(x++)>;
-// };
-//
-// CONCEPT(incrementable, weakly_incrementable<_>, regular<_>){};
-//
-// CONCEPT(weak_iterator, weakly_incrementable<_>, copyable<_>){};
-//
-// CONCEPT(iterator, weak_iterator<_>, equality_comparable<_>){};
-//
-// CONCEPT(weak_output_iterator, writable<_>, weak_iterator<_>){};
-//
-// CONCEPT(output_iterator, weak_output_iterator<_>, iterator<_>){};
-//
-// CONCEPT(weak_input_iterator, weak_iterator<_>, readable<_>) {
-//   template <class T>
-//   auto require(T x)->valid<decltype(returns<readable<_>>(x++))>;
-// };
-//
-// CONCEPT(input_iterator, weak_input_iterator<_>, iterator<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<is_true<std::is_convertible<
-//           typename std::iterator_traits<T>::iterator_category,
-//           std::input_iterator_tag>>>;
-// };
-//
-// CONCEPT(forward_iterator, input_iterator<_>, incrementable<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<is_true<std::is_convertible<
-//           typename std::iterator_traits<T>::iterator_category,
-//           std::forward_iterator_tag>>>;
-// };
-//
-// CONCEPT(bidirectional_iterator, forward_iterator<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<is_true<std::is_convertible<
-//                   typename std::iterator_traits<T>::iterator_category,
-//                   std::bidirectional_iterator_tag>>,
-//               decltype(returns<T&>(--x)), decltype(returns<T>(x--)),
-//               is_true<std::is_same<decltype(*x), decltype(*x--)>>>;
-// };
-//
-// CONCEPT(random_access_iterator, bidirectional_iterator<_>, totally_ordered<_>) {
-//   template <class T>
-//   auto require(T x)
-//       ->valid<
-//           is_true<std::is_convertible<
-//               typename std::iterator_traits<T>::iterator_category,
-//               std::random_access_iterator_tag>>,
-//           decltype(returns<std::is_integral<_>>(x - x)),
-//           decltype(returns<std::is_signed<_>>(x - x)),
-//           decltype(returns<typename std::iterator_traits<T>::difference_type>(
-//               x - x)),
-//           decltype(returns<T>(x + (x - x))), decltype(returns<T>((x - x) + x)),
-//           decltype(returns<T>(x - (x - x))),
-//           decltype(returns<T&>(x += (x - x))),
-//           decltype(returns<T&>(x -= (x - x))),
-//           decltype(
-//               returns<typename std::iterator_traits<T>::reference>(x[x - x]))>;
-// };
+template <class T>
+constexpr bool readable() {
+  return models<detail::iterator::Readable, T>();
+}
+
+//////////////
+// writable //
+//////////////
+
+namespace detail {
+namespace iterator {
+
+struct Writable : Concept {
+  template <class T>
+  auto require(T&& x) -> list<
+      semiregular<T>(),
+      valid<decltype(*x = std::declval<iterator_traits::value_type<T>>())>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool writable() {
+  return models<detail::iterator::Writable, T>();
+}
+
+//////////////////////////
+// weakly_incrementable //
+//////////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct WeaklyIncrementable : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<integral<iterator_traits::difference_type<T>>(),
+              same<T&, decltype(++x)>(), valid<decltype(x++)>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool weakly_incrementable() {
+  return models<detail::iterator::WeaklyIncrementable, T>();
+}
+
+///////////////////
+// incrementable //
+///////////////////
+
+namespace detail {
+namespace iterator {
+
+struct Incrementable : Concept {
+  template <class T>
+  auto require(T&& x) -> list<regular<T>(), weakly_incrementable<T>(),
+                              same<T, decltype(x++)>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool incrementable() {
+  return models<detail::iterator::Incrementable, T>();
+}
+
+///////////////////
+// weak_iterator //
+///////////////////
+
+namespace detail {
+namespace iterator {
+
+struct WeakIterator : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<weakly_incrementable<T>(), copyable<T>(), valid<decltype(*x)>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool weak_iterator() {
+  return models<detail::iterator::WeakIterator, T>();
+}
+
+//////////////
+// iterator //
+//////////////
+
+template <class T>
+constexpr bool iterator() {
+  return weak_iterator<T>() && equality_comparable<T>();
+}
+
+//////////////////////////
+// weak_output_iterator //
+//////////////////////////
+
+template <class T>
+constexpr bool weak_output_iterator() {
+  return writable<T>() && weak_iterator<T>();
+}
+
+//////////////////////////
+// weak_output_iterator //
+//////////////////////////
+
+template <class T>
+constexpr bool output_iterator() {
+  return weak_output_iterator<T>() && iterator<T>();
+}
+
+/////////////////////////
+// weak_input_iterator //
+/////////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct WeakInputIterator : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<weak_iterator<T>(), readable<T>(), readable<decltype(x++)>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool weak_input_iterator() {
+  return models<detail::iterator::WeakInputIterator, T>();
+}
+
+////////////////////
+// input_iterator //
+////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct InputIterator : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<weak_input_iterator<T>(), echo::concept::iterator<T>(),
+              convertible<iterator_traits::iterator_category<T>,
+                          std::input_iterator_tag>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool input_iterator() {
+  return models<detail::iterator::InputIterator, T>();
+}
+
+//////////////////////
+// forward_iterator //
+//////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct ForwardIterator : Concept {
+  template <class T>
+  auto require(T && ) -> list<input_iterator<T>(), incrementable<T>(),
+                              convertible<iterator_traits::iterator_category<T>,
+                                          std::forward_iterator_tag>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool forward_iterator() {
+  return models<detail::iterator::ForwardIterator, T>();
+}
+
+////////////////////////////
+// bidirectional_iterator //
+////////////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct BidirectionalIterator : Concept {
+  template <class T>
+  auto require(T&& x) -> list<
+      forward_iterator<T>(), convertible<iterator_traits::iterator_category<T>,
+                                         std::bidirectional_iterator_tag>(),
+      same<T&, decltype(--x)>(), same<T, decltype(x--)>(),
+      same<decltype(*x), decltype(*x--)>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool bidirectional_iterator() {
+  return models<detail::iterator::BidirectionalIterator, T>();
+}
+
+////////////////////////////
+// random_access_iterator //
+////////////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct RandomAccessIterator : Concept {
+  template <class T>
+  auto require(T&& x) -> list<
+      convertible<iterator_traits::iterator_category<T>,
+                  std::random_access_iterator_tag>(),
+      signed_integral<decltype(x - x)>(),
+      same<iterator_traits::difference_type<T>, decltype(x - x)>(),
+      same<T, decltype(x + (x - x))>(), same<T, decltype((x - x) + x)>(),
+      same<T, decltype(x - (x - x))>(), same<T&, decltype(x += (x - x))>(),
+      same<T&, decltype(x -= (x - x))>(),
+      same<iterator_traits::reference<T>, decltype(x[x - x])>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool random_access_iterator() {
+  return models<detail::iterator::RandomAccessIterator, T>();
+}
 
 }  // end namespace concept
 }  // end namespace echo

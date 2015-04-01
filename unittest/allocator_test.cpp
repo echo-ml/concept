@@ -8,4 +8,5 @@ TEST_CASE("allocator") {
   std::allocator<double> alloc;
   alloc.allocate(3);
   REQUIRE(allocator<std::allocator<double>>());
+  REQUIRE(!allocator<double>());
 }
