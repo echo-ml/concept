@@ -235,6 +235,7 @@ namespace iterator {
 struct RandomAccessIterator : Concept {
   template <class T>
   auto require(T&& x) -> list<
+      bidirectional_iterator<T>(), totally_ordered<T>(),
       convertible<iterator_traits::iterator_category<T>,
                   std::random_access_iterator_tag>(),
       signed_integral<decltype(x - x)>(),
@@ -250,6 +251,28 @@ struct RandomAccessIterator : Concept {
 template <class T>
 constexpr bool random_access_iterator() {
   return models<detail::iterator::RandomAccessIterator, T>();
+}
+
+/////////////////////////
+// contiguous_iterator //
+/////////////////////////
+
+namespace detail {
+namespace iterator {
+
+struct ContiguousIterator : Concept {
+  template <class T>
+  auto require(T&& x)
+      -> list<random_access_iterator<T>(),
+              convertible<iterator_traits::iterator_category<T>,
+                          echo::iterator::contiguous_iterator_tag>()>;
+};
+}
+}
+
+template <class T>
+constexpr bool contiguous_iterator() {
+  return models<detail::iterator::ContiguousIterator, T>();
 }
 
 }  // end namespace concept

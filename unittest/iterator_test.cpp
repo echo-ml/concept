@@ -19,6 +19,7 @@ TEST_CASE("iterator") {
   REQUIRE(forward_iterator<int*>());
   REQUIRE(bidirectional_iterator<int*>());
   REQUIRE(random_access_iterator<int*>());
+  REQUIRE(contiguous_iterator<int*>());
 
   REQUIRE(!readable<int>());
   REQUIRE(!writable<int>());
@@ -33,4 +34,5 @@ TEST_CASE("iterator") {
   REQUIRE(!forward_iterator<int>());
   REQUIRE(!bidirectional_iterator<int>());
   REQUIRE(!random_access_iterator<int>());
+  REQUIRE(!contiguous_iterator<int>());
 }

@@ -82,6 +82,13 @@ using echo::concept::models;
           (__VA_ARGS__),                                             \
       int > ::type = 0
 
+#define CONCEPT_REQUIRES_REDECLARATION(...)                                    \
+  int CONCEPT_PP_CAT(_concept_requires_, __LINE__),                            \
+      typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_, __LINE__) == \
+                               2) ||                                           \
+                                  (__VA_ARGS__),                               \
+                              int>::type
+
 #define CONCEPT_MEMBER_REQUIRES(...)                                    \
   template <int CONCEPT_PP_CAT(_concept_requires_, __LINE__) = 1,       \
             typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_, \

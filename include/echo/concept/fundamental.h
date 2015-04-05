@@ -53,6 +53,26 @@ constexpr bool equality_comparable() {
   return models<detail::fundamental::EqualityComparable, T>();
 }
 
+namespace detail {
+namespace fundamental {
+
+struct EqualityComparable2 : Concept {
+  template <class U, class V>
+  auto require(U&& u, V&& v)
+      -> list<equality_comparable<U>(), equality_comparable<V>(),
+              convertible<bool, decltype(u == v)>(),
+              convertible<bool, decltype(v == u)>(),
+              convertible<bool, decltype(u != v)>(),
+              convertible<bool, decltype(v != u)>()>;
+};
+}
+}
+
+template <class U, class V>
+constexpr bool equality_comparable() {
+  return models<detail::fundamental::EqualityComparable2, U, V>();
+}
+
 ////////////////////
 // weakly_ordered //
 ////////////////////
