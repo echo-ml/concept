@@ -14,4 +14,5 @@ struct choice<kMaxOverloads> {};
 
 struct selector : choice<0> {};
 
-}}
+}  // namespace overload
+}  // namespace echo

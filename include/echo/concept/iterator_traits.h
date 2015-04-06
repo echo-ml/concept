@@ -57,12 +57,12 @@ template <class T, class StdIteratorCategory>
 struct IteratorCategory<const T*, StdIteratorCategory> {
   using type = iterator::contiguous_iterator_tag;
 };
-}
-}
+}  // namespace iterator_traits
+}  // namespace detail
 
 template <class Iterator>
 using iterator_category = typename detail::iterator_traits::IteratorCategory<
     Iterator, typename std::iterator_traits<Iterator>::iterator_category>::type;
 
-}  // end namespace iterator_triats
+}  // namespace iterator_traits
 }  // end namespace echo

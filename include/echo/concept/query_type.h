@@ -4,11 +4,9 @@
 
 namespace echo {
 namespace type_querier {
-
 struct type_not_found {};
-
-}
-}
+}  // namespace type_querier
+}  // namespace echo
 
 #define ECHO_MAKE_TYPE_QUERIER(TYPE)                           \
   template <class T, class = typename T::TYPE>                 \

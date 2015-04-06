@@ -38,13 +38,11 @@ constexpr bool destructible() {
 
 namespace detail {
 namespace fundamental {
-
 struct EqualityComparable : Concept {
   template <class T>
   auto require(T&& x) -> list<convertible<bool, decltype(x == x)>(),
                               convertible<bool, decltype(x != x)>()>;
 };
-
 }  // end namespace fundamental
 }  // end namespace detail
 
@@ -55,7 +53,6 @@ constexpr bool equality_comparable() {
 
 namespace detail {
 namespace fundamental {
-
 struct EqualityComparable2 : Concept {
   template <class U, class V>
   auto require(U&& u, V&& v)
@@ -65,8 +62,8 @@ struct EqualityComparable2 : Concept {
               convertible<bool, decltype(u != v)>(),
               convertible<bool, decltype(v != u)>()>;
 };
-}
-}
+}  // namespace fundamental
+}  // namespace detail
 
 template <class U, class V>
 constexpr bool equality_comparable() {
@@ -79,7 +76,6 @@ constexpr bool equality_comparable() {
 
 namespace detail {
 namespace fundamental {
-
 struct WeaklyOrdered : Concept {
   template <class T>
   auto require(T&& x) -> list<convertible<bool, decltype(x < x)>(),
@@ -87,7 +83,6 @@ struct WeaklyOrdered : Concept {
                               convertible<bool, decltype(x <= x)>(),
                               convertible<bool, decltype(x >= x)>()>;
 };
-
 }  // end namespace fundamental
 }  // end namespace detail
 
@@ -111,14 +106,12 @@ constexpr bool totally_ordered() {
 
 namespace detail {
 namespace fundamental {
-
 struct Allocatable : Concept {
   template <class T>
   auto require(const T& x) -> list<
       same<T*, decltype(new T)>(), valid<decltype(delete new T)>(),
       same<T*, decltype(new T[1])>(), valid<decltype(delete[] new T[1])>()>;
 };
-
 }  // end namespace fundamental
 }  // end namespace detail
 
@@ -171,7 +164,6 @@ constexpr bool signed_integral() {
 
 namespace detail {
 namespace fundamental {
-
 struct NullablePointer : Concept {
   template <class T>
   auto require(T&& x)
@@ -181,8 +173,8 @@ struct NullablePointer : Concept {
               convertible<bool, decltype(x == nullptr)>(),
               convertible<bool, decltype(x != nullptr)>()>;
 };
-}
-}
+}  // namespace fundamental
+}  // namespace detail
 
 template <class T>
 constexpr bool nullable_pointer() {
