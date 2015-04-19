@@ -14,37 +14,44 @@ namespace detail {
 namespace allocator {
 
 struct Allocator : Concept {
-  template <class A, class value_type = typename A::value_type,
-            class pointer = allocator_traits::pointer<A>,
-            class const_pointer = allocator_traits::const_pointer<A>,
-            class void_pointer = allocator_traits::void_pointer<A>,
-            class const_void_pointer = allocator_traits::const_void_pointer<A>,
-            class size_type = allocator_traits::size_type<A>,
-            class difference_type = allocator_traits::difference_type<A> >
+  template <class A>
   auto require(A&& alloc) -> list<
       equality_comparable<A>(), noexcept(A(std::declval<A>())),
       noexcept(A(std::move(std::declval<A>()))),
 
-      nullable_pointer<pointer>(), random_access_iterator<pointer>(),
+      nullable_pointer<allocator_traits::pointer<A>>(),
+      random_access_iterator<allocator_traits::pointer<A>>(),
 
-      nullable_pointer<const_pointer>(),
-      random_access_iterator<const_pointer>(),
-      convertible<pointer, const_pointer>(),
+      nullable_pointer<allocator_traits::const_pointer<A>>(),
+      random_access_iterator<allocator_traits::const_pointer<A>>(),
+      convertible<allocator_traits::pointer<A>,
+                  allocator_traits::const_pointer<A>>(),
 
-      nullable_pointer<void_pointer>(), convertible<pointer, void_pointer>(),
+      // These checks break intel's compiler so disable for now.
+      // nullable_pointer<allocator_traits::void_pointer<A>>(),
+      // convertible<allocator_traits::pointer<A>,
+      //             allocator_traits::void_pointer<A>>(),
+      //
+      // nullable_pointer<allocator_traits::const_void_pointer<A>>(),
+      // convertible<allocator_traits::pointer<A>,
+      //             allocator_traits::const_void_pointer<A>>(),
+      // convertible<allocator_traits::const_pointer<A>,
+      //             allocator_traits::const_void_pointer<A>>(),
+      // convertible<allocator_traits::void_pointer<A>,
+      //             allocator_traits::const_void_pointer<A>>(),
 
-      nullable_pointer<const_void_pointer>(),
-      convertible<pointer, const_void_pointer>(),
-      convertible<const_pointer, const_void_pointer>(),
-      convertible<void_pointer, const_void_pointer>(),
+      integral<allocator_traits::size_type<A>>(),
+      signed_integral<allocator_traits::difference_type<A>>(),
 
-      integral<size_type>(), signed_integral<difference_type>(),
+      same<allocator_traits::value_type<A>&,
+           decltype(*std::declval<allocator_traits::pointer<A>>())>(),
+      same<const allocator_traits::value_type<A>&,
+           decltype(*std::declval<allocator_traits::const_pointer<A>>())>(),
 
-      same<value_type&, decltype(*std::declval<pointer>())>(),
-      same<const value_type&, decltype(*std::declval<const_pointer>())>(),
-
-      same<pointer, decltype(alloc.allocate(0))>(),
-      valid<decltype(alloc.deallocate(std::declval<pointer>(), 0))>()>;
+      same<allocator_traits::pointer<A>, decltype(alloc.allocate(0))>(),
+      valid<decltype(alloc.deallocate(
+          std::declval<allocator_traits::pointer<A>>(), 0))>()
+          >;
 };
 
 }  // end namespace allocator

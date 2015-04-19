@@ -6,7 +6,7 @@ using namespace echo;
 
 template<class T, 
   CONCEPT_REQUIRES(
-      std::is_floating_point<T>()
+      std::is_floating_point<T>::value
   )
 >
 int f(T, overload::choice<0>) {
@@ -15,7 +15,7 @@ int f(T, overload::choice<0>) {
 
 template<class T, 
   CONCEPT_REQUIRES(
-      std::is_integral<T>()
+      std::is_integral<T>::value
   )
 >
 int f(T, overload::choice<1>) {
