@@ -181,5 +181,24 @@ constexpr bool nullable_pointer() {
   return models<detail::fundamental::NullablePointer, T>();
 }
 
+//////////////
+// callable //
+//////////////
+
+namespace detail {
+namespace fundamental {
+struct Callable : Concept{
+  template <class Function, class... Arguments>
+  auto require(Function&& f,
+               Arguments&&... x) -> list<valid<decltype(f(x...))>()>;
+};
+}
+}
+
+template <class Function, class... Arguments>
+constexpr bool callable() {
+  return models<detail::fundamental::Callable, Function, Arguments...>();
+}
+
 }  // end namespace concept
 }  // end namespace echo

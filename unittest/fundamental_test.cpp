@@ -2,6 +2,7 @@
 #include <echo/test.h>
 #include <memory>
 #include <iostream>
+#include <functional>
 
 using namespace echo::concept;
 
@@ -19,4 +20,9 @@ TEST_CASE("fundamental") {
   REQUIRE(equality_comparable<int, double>());
   REQUIRE(!equality_comparable<A, double>());
   REQUIRE(!equality_comparable<double*, double>());
+
+  REQUIRE(callable<std::plus<double>, double, double>());
+  REQUIRE(callable<std::plus<double>, double, int>());
+  REQUIRE(!callable<std::plus<double>, double, A>());
+  REQUIRE(!callable<int, double, A>());
 }
