@@ -3,7 +3,8 @@
 #include <echo/const_algorithm.h>
 #include <type_traits>
 
-namespace echo { namespace concept {
+namespace echo {
+namespace concept {
 
 /////////////
 // Concept //
@@ -11,24 +12,24 @@ namespace echo { namespace concept {
 
 class Concept {
  protected:
-  //list
+  // list
   template <bool... Values>
   using list = std::integral_constant<
       bool, const_algorithm::and_(fatal::constant_sequence<bool, Values...>())>;
 
-  //valid
+  // valid
   template <class T>
   static constexpr bool valid() {
     return true;
   }
 
-  //same
+  // same
   template <class A, class B>
   static constexpr bool same() {
     return std::is_same<A, B>();
   }
 
-  //convertible
+  // convertible
   template <class A, class B>
   static constexpr bool convertible() {
     return std::is_convertible<A, B>();
@@ -36,7 +37,7 @@ class Concept {
 };
 
 ////////////
-// models // 
+// models //
 ////////////
 
 namespace detail {
@@ -63,37 +64,37 @@ constexpr bool models() {
   return Result{};
 }
 
-} //end namespace concept
+}  // end namespace concept
 
 using echo::concept::Concept;
 using echo::concept::models;
 
-} //end namespace echo
+}  // end namespace echo
 
 #define CONCEPT_PP_CAT_(X, Y) X##Y
 #define CONCEPT_PP_CAT(X, Y) CONCEPT_PP_CAT_(X, Y)
 
-#define CONCEPT_REQUIRES(...)                                        \
-  int CONCEPT_PP_CAT(                                                \
-      _concept_requires_,                                            \
-      __LINE__) = 1,                                                 \
-      typename std::enable_if <                                      \
-              (CONCEPT_PP_CAT(_concept_requires_, __LINE__) == 2) || \
-          (__VA_ARGS__),                                             \
+#define CONCEPT_REQUIRES(...)                                           \
+  int CONCEPT_PP_CAT(                                                   \
+      _concept_requires_,                                               \
+      __COUNTER__) = 1,                                                 \
+      typename std::enable_if <                                         \
+              (CONCEPT_PP_CAT(_concept_requires_, __COUNTER__) == 2) || \
+          (__VA_ARGS__),                                                \
       int > ::type = 0
 
-#define CONCEPT_REQUIRES_REDECLARATION(...)                                    \
-  int CONCEPT_PP_CAT(_concept_requires_, __LINE__),                            \
-      typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_, __LINE__) == \
-                               2) ||                                           \
-                                  (__VA_ARGS__),                               \
+#define CONCEPT_REQUIRES_REDECLARATION(...)                         \
+  int CONCEPT_PP_CAT(_concept_requires_, __COUNTER__),              \
+      typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_,   \
+                                              __COUNTER__) == 2) || \
+                                  (__VA_ARGS__),                    \
                               int>::type
 
-#define CONCEPT_MEMBER_REQUIRES(...)                                    \
-  template <int CONCEPT_PP_CAT(_concept_requires_, __LINE__) = 1,       \
-            typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_, \
-                                                    __LINE__) == 2) ||  \
-                                        (__VA_ARGS__),                  \
+#define CONCEPT_MEMBER_REQUIRES(...)                                      \
+  template <int CONCEPT_PP_CAT(_concept_requires_, __COUNTER__) = 1,      \
+            typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_,   \
+                                                    __COUNTER__) == 2) || \
+                                        (__VA_ARGS__),                    \
                                     int>::type = 0>
 
 #define CONCEPT_ASSERT(...) static_assert((__VA_ARGS__), "Concept check failed")
