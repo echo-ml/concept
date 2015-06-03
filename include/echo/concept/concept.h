@@ -1,6 +1,6 @@
 #pragma once
 
-#include <echo/const_algorithm.h>
+#include <echo/variadic_operator.h>
 #include <type_traits>
 
 namespace echo {
@@ -15,7 +15,7 @@ class Concept {
   // list
   template <bool... Values>
   using list = std::integral_constant<
-      bool, const_algorithm::and_(fatal::constant_sequence<bool, Values...>())>;
+      bool, and_c<Values...>()>;
 
   // valid
   template <class T>
@@ -77,23 +77,23 @@ using echo::concept::models;
 #define CONCEPT_REQUIRES(...)                                           \
   int CONCEPT_PP_CAT(                                                   \
       _concept_requires_,                                               \
-      __COUNTER__) = 1,                                                 \
+      __LINE__) = 1,                                                 \
       typename std::enable_if <                                         \
-              (CONCEPT_PP_CAT(_concept_requires_, __COUNTER__) == 2) || \
+              (CONCEPT_PP_CAT(_concept_requires_, __LINE__) == 2) || \
           (__VA_ARGS__),                                                \
       int > ::type = 0
 
 #define CONCEPT_REQUIRES_REDECLARATION(...)                         \
-  int CONCEPT_PP_CAT(_concept_requires_, __COUNTER__),              \
+  int CONCEPT_PP_CAT(_concept_requires_, __LINE__),              \
       typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_,   \
-                                              __COUNTER__) == 2) || \
+                                              __LINE__) == 2) || \
                                   (__VA_ARGS__),                    \
                               int>::type
 
 #define CONCEPT_MEMBER_REQUIRES(...)                                      \
-  template <int CONCEPT_PP_CAT(_concept_requires_, __COUNTER__) = 1,      \
+  template <int CONCEPT_PP_CAT(_concept_requires_, __LINE__) = 1,      \
             typename std::enable_if<(CONCEPT_PP_CAT(_concept_requires_,   \
-                                                    __COUNTER__) == 2) || \
+                                                    __LINE__) == 2) || \
                                         (__VA_ARGS__),                    \
                                     int>::type = 0>
 

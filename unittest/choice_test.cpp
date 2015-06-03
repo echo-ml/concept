@@ -4,30 +4,19 @@
 
 using namespace echo;
 
-template<class T, 
-  CONCEPT_REQUIRES(
-      std::is_floating_point<T>::value
-  )
->
+template <class T, CONCEPT_REQUIRES(std::is_floating_point<T>::value)>
 int f(T, overload::choice<0>) {
   return 3;
 }
 
-template<class T, 
-  CONCEPT_REQUIRES(
-      std::is_integral<T>::value
-  )
->
+template <class T, CONCEPT_REQUIRES(std::is_integral<T>::value)>
 int f(T, overload::choice<1>) {
   return 2;
 }
 
-template<class T>
+template <class T>
 int f(T, overload::choice<2>) {
   return 1;
 }
 
-
-TEST_CASE("overload") {
-  REQUIRE(f(2l, overload::selector()) == 2);
-}
+TEST_CASE("overload") { REQUIRE(f(2l, overload::selector()) == 2); }
