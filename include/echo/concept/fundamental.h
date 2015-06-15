@@ -202,33 +202,5 @@ constexpr bool callable() {
   return models<detail::fundamental::Callable, Function, Arguments...>();
 }
 
-///////////////
-// k_indexed //
-///////////////
-
-namespace detail { namespace fundamental {
-
-// template<std::size_t... Indexes, class T>
-// auto k_indexed_impl(std::index_sequence<Indexes...>, T&& x) ->
-//   decltype(x(repeat_type_c<Indexes, index_t>()...));
-
-template<class>
-struct KIndexed {};
-
-template<std::size_t... Indexes>
-struct KIndexed<std::index_sequence<Indexes...>> : Concept {
-  template<class T>
-  auto require(T&& x) -> list<
-    valid<decltype(x(repeat_type_c<Indexes, index_t>()...))>()
-  >;
-};
-
-}}
-
-template<int K, class T>
-constexpr bool k_indexed() {
-  return models<detail::fundamental::KIndexed<std::make_index_sequence<K>>, T>();
-}
-
 }  // end namespace concept
 }  // end namespace echo
