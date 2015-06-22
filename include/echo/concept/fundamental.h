@@ -1,7 +1,7 @@
 #pragma once
 
 #include <echo/concept/concept.h>
-#include <echo/utility/repeat_type.h>
+#include <echo/repeat_type.h>
 #include <echo/index.h>
 
 namespace echo {
