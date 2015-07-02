@@ -2,7 +2,6 @@
 
 #include <echo/concept/concept.h>
 #include <echo/repeat_type.h>
-#include <echo/index.h>
 
 namespace echo {
 namespace concept {
