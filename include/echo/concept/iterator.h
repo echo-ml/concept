@@ -1,5 +1,7 @@
 #pragma once
 
+#define DETAIL_NS detail_iterator
+
 #include <echo/concept/fundamental.h>
 #include <echo/concept/iterator_traits.h>
 
@@ -9,155 +11,132 @@
 namespace echo {
 namespace concept {
 
-//////////////
-// Readable //
-//////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// readable
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct Readable : Concept {
   template <class T>
   auto require(T&& x) -> list<
       semiregular<T>(), same<iterator_traits::reference<T>, decltype(*x)>()>;
 };
-}  // end namespace iterator
 }  // end namespace detail
 
 template <class T>
 constexpr bool readable() {
-  return models<detail::iterator::Readable, T>();
+  return models<DETAIL_NS::Readable, T>();
 }
 
-//////////////
-// writable //
-//////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// writable
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct Writable : Concept {
   template <class T>
   auto require(T&& x) -> list<
       semiregular<T>(),
       valid<decltype(*x = std::declval<iterator_traits::value_type<T>>())>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool writable() {
-  return models<detail::iterator::Writable, T>();
+  return models<DETAIL_NS::Writable, T>();
 }
 
-//////////////////////////
-// weakly_incrementable //
-//////////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// weakly_incrementable
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct WeaklyIncrementable : Concept {
   template <class T>
   auto require(T&& x)
       -> list<integral<iterator_traits::difference_type<T>>(),
               same<T&, decltype(++x)>(), valid<decltype(x++)>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool weakly_incrementable() {
-  return models<detail::iterator::WeaklyIncrementable, T>();
+  return models<DETAIL_NS::WeaklyIncrementable, T>();
 }
 
-///////////////////
-// incrementable //
-///////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// incrementable
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct Incrementable : Concept {
   template <class T>
   auto require(T&& x) -> list<regular<T>(), weakly_incrementable<T>(),
                               same<T, decltype(x++)>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool incrementable() {
-  return models<detail::iterator::Incrementable, T>();
+  return models<DETAIL_NS::Incrementable, T>();
 }
 
-///////////////////
-// weak_iterator //
-///////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// weak_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct WeakIterator : Concept {
   template <class T>
   auto require(T&& x)
       -> list<weakly_incrementable<T>(), copyable<T>(), valid<decltype(*x)>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool weak_iterator() {
-  return models<detail::iterator::WeakIterator, T>();
+  return models<DETAIL_NS::WeakIterator, T>();
 }
 
-//////////////
-// iterator //
-//////////////
-
+//------------------------------------------------------------------------------
+// iterator
+//------------------------------------------------------------------------------
 template <class T>
 constexpr bool iterator() {
   return weak_iterator<T>() && equality_comparable<T>();
 }
 
-//////////////////////////
-// weak_output_iterator //
-//////////////////////////
-
+//------------------------------------------------------------------------------
+// weak_output_iterator
+//------------------------------------------------------------------------------
 template <class T>
 constexpr bool weak_output_iterator() {
   return writable<T>() && weak_iterator<T>();
 }
 
-//////////////////////////
-// weak_output_iterator //
-//////////////////////////
-
+//------------------------------------------------------------------------------
+// output_iterator
+//------------------------------------------------------------------------------
 template <class T>
 constexpr bool output_iterator() {
   return weak_output_iterator<T>() && iterator<T>();
 }
 
-/////////////////////////
-// weak_input_iterator //
-/////////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// weak_input_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct WeakInputIterator : Concept {
   template <class T>
   auto require(T&& x)
       -> list<weak_iterator<T>(), readable<T>(), readable<decltype(x++)>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool weak_input_iterator() {
-  return models<detail::iterator::WeakInputIterator, T>();
+  return models<DETAIL_NS::WeakInputIterator, T>();
 }
 
-////////////////////
-// input_iterator //
-////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// input_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct InputIterator : Concept {
   template <class T>
   auto require(T&& x)
@@ -165,40 +144,34 @@ struct InputIterator : Concept {
               convertible<iterator_traits::iterator_category<T>,
                           std::input_iterator_tag>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool input_iterator() {
-  return models<detail::iterator::InputIterator, T>();
+  return models<DETAIL_NS::InputIterator, T>();
 }
 
-//////////////////////
-// forward_iterator //
-//////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// forward_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct ForwardIterator : Concept {
   template <class T>
   auto require(T && ) -> list<input_iterator<T>(), incrementable<T>(),
                               convertible<iterator_traits::iterator_category<T>,
                                           std::forward_iterator_tag>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool forward_iterator() {
-  return models<detail::iterator::ForwardIterator, T>();
+  return models<DETAIL_NS::ForwardIterator, T>();
 }
 
-////////////////////////////
-// bidirectional_iterator //
-////////////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// bidirectional_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct BidirectionalIterator : Concept {
   template <class T>
   auto require(T&& x) -> list<
@@ -207,20 +180,17 @@ struct BidirectionalIterator : Concept {
       same<T&, decltype(--x)>(), same<T, decltype(x--)>(),
       same<decltype(*x), decltype(*x--)>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool bidirectional_iterator() {
-  return models<detail::iterator::BidirectionalIterator, T>();
+  return models<DETAIL_NS::BidirectionalIterator, T>();
 }
 
-////////////////////////////
-// random_access_iterator //
-////////////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// random_access_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct RandomAccessIterator : Concept {
   template <class T>
   auto require(T&& x) -> list<
@@ -234,20 +204,17 @@ struct RandomAccessIterator : Concept {
       same<T&, decltype(x -= (x - x))>(),
       same<iterator_traits::reference<T>, decltype(x[x - x])>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool random_access_iterator() {
-  return models<detail::iterator::RandomAccessIterator, T>();
+  return models<DETAIL_NS::RandomAccessIterator, T>();
 }
 
-/////////////////////////
-// contiguous_iterator //
-/////////////////////////
-
-namespace detail {
-namespace iterator {
+//------------------------------------------------------------------------------
+// contiguous_iterator
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
 struct ContiguousIterator : Concept {
   template <class T>
   auto require(T&& x)
@@ -255,13 +222,14 @@ struct ContiguousIterator : Concept {
               convertible<iterator_traits::iterator_category<T>,
                           echo::iterator::contiguous_iterator_tag>()>;
 };
-}  // namespace iterator
 }  // namespace detail
 
 template <class T>
 constexpr bool contiguous_iterator() {
-  return models<detail::iterator::ContiguousIterator, T>();
+  return models<DETAIL_NS::ContiguousIterator, T>();
 }
 
 }  // end namespace concept
 }  // end namespace echo
+
+#undef DETAIL_NS
