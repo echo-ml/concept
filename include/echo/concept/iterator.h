@@ -229,6 +229,23 @@ constexpr bool contiguous_iterator() {
   return models<DETAIL_NS::ContiguousIterator, T>();
 }
 
+//------------------------------------------------------------------------------
+// iterator_range
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+struct IteratorRange : Concept {
+  template <class First, class Last>
+  auto require(First&&, Last && )
+      -> list<weak_iterator<First>(), regular<Last>(),
+              equality_comparable<First, Last>()>;
+};
+}
+
+template <class First, class Last>
+constexpr bool iterator_range() {
+  return models<DETAIL_NS::IteratorRange, First, Last>();
+}
+
 }  // end namespace concept
 }  // end namespace echo
 
