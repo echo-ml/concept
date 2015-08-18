@@ -4,6 +4,7 @@
 #include <echo/concept/fundamental.h>
 #include <echo/concept/allocator.h>
 #include <echo/concept/iterator.h>
+#include <echo/concept/range.h>
 #include <echo/concept/overload.h>
 #include <echo/concept/utility.h>
 
