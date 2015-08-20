@@ -202,7 +202,7 @@ struct RandomAccessIterator : Concept {
       same<T, decltype(x + (x - x))>(), same<T, decltype((x - x) + x)>(),
       same<T, decltype(x - (x - x))>(), same<T&, decltype(x += (x - x))>(),
       same<T&, decltype(x -= (x - x))>(),
-      same<iterator_traits::reference<T>, decltype(x[x - x])>()>;
+      convertible<decltype(x[x - x]), iterator_traits::reference<T>>()>;
 };
 }  // namespace detail
 
