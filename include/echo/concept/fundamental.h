@@ -4,6 +4,7 @@
 
 #include <echo/concept/concept.h>
 #include <echo/repeat_type.h>
+#include <iosfwd>
 
 namespace echo {
 namespace concept {
@@ -176,6 +177,27 @@ struct Callable : Concept {
 template <class Function, class... Arguments>
 constexpr bool callable() {
   return models<DETAIL_NS::Callable, Function, Arguments...>();
+}
+
+//------------------------------------------------------------------------------
+// printable
+//------------------------------------------------------------------------------
+namespace DETAIL_NS {
+struct Printable : Concept {
+  template<class T>
+  auto require(T&& x) -> list<
+    same<std::ostream&,
+      decltype(
+        std::declval<std::ostream&>() << x
+      )
+      >()
+  >;
+};
+}
+
+template<class T>
+constexpr bool printable() {
+  return models<DETAIL_NS::Printable, T>();
 }
 
 }  // end namespace concept

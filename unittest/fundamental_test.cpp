@@ -25,4 +25,7 @@ TEST_CASE("fundamental") {
   REQUIRE(callable<std::plus<double>, double, int>());
   REQUIRE(!callable<std::plus<double>, double, A>());
   REQUIRE(!callable<int, double, A>());
+
+  REQUIRE(printable<double>());
+  REQUIRE(!printable<A>());
 }
