@@ -3,6 +3,7 @@
 #define DETAIL_NS detail_range
 
 #include <echo/concept/iterator.h>
+#include <echo/concept/range_traits.h>
 
 namespace echo {
 namespace concept {
