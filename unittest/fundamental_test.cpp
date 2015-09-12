@@ -17,9 +17,9 @@ TEST_CASE("fundamental") {
   REQUIRE(equality_comparable<double*>());
   REQUIRE(!equality_comparable<A>());
 
-  REQUIRE(equality_comparable<int, double>());
-  REQUIRE(!equality_comparable<A, double>());
-  REQUIRE(!equality_comparable<double*, double>());
+  REQUIRE(equality_comparable2<int, double>());
+  REQUIRE(!equality_comparable2<A, double>());
+  REQUIRE(!equality_comparable2<double*, double>());
 
   REQUIRE(callable<std::plus<double>, double, double>());
   REQUIRE(callable<std::plus<double>, double, int>());

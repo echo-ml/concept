@@ -39,8 +39,8 @@ constexpr bool destructible() {
 namespace DETAIL_NS {
 struct EqualityComparable : Concept {
   template <class T>
-  auto require(T&& x) -> list<convertible<bool, decltype(x == x)>(),
-                              convertible<bool, decltype(x != x)>()>;
+  auto require(T&& x) -> list<convertible<decltype(x == x), bool>(),
+                              convertible<decltype(x != x), bool>()>;
 };
 }  // end namespace detail
 
@@ -54,15 +54,15 @@ struct EqualityComparable2 : Concept {
   template <class U, class V>
   auto require(U&& u, V&& v)
       -> list<equality_comparable<U>(), equality_comparable<V>(),
-              convertible<bool, decltype(u == v)>(),
-              convertible<bool, decltype(v == u)>(),
-              convertible<bool, decltype(u != v)>(),
-              convertible<bool, decltype(v != u)>()>;
+              convertible<decltype(u == v), bool>(),
+              convertible<decltype(v == u), bool>(),
+              convertible<decltype(u != v), bool>(),
+              convertible<decltype(v != u), bool>()>;
 };
 }  // namespace detail
 
 template <class U, class V>
-constexpr bool equality_comparable() {
+constexpr bool equality_comparable2() {
   return models<DETAIL_NS::EqualityComparable2, U, V>();
 }
 
@@ -72,10 +72,10 @@ constexpr bool equality_comparable() {
 namespace DETAIL_NS {
 struct WeaklyOrdered : Concept {
   template <class T>
-  auto require(T&& x) -> list<convertible<bool, decltype(x < x)>(),
-                              convertible<bool, decltype(x > x)>(),
-                              convertible<bool, decltype(x <= x)>(),
-                              convertible<bool, decltype(x >= x)>()>;
+  auto require(T&& x) -> list<convertible<decltype(x < x), bool>(),
+                              convertible<decltype(x > x), bool>(),
+                              convertible<decltype(x <= x), bool>(),
+                              convertible<decltype(x >= x), bool>()>;
 };
 }  // end namespace detail
 
@@ -153,8 +153,8 @@ struct NullablePointer : Concept {
       -> list<equality_comparable<T>(), default_constructible<T>(),
               copyable<T>(), destructible<T>(), valid<decltype(T(nullptr))>(),
               same<T&, decltype(x = nullptr)>(),
-              convertible<bool, decltype(x == nullptr)>(),
-              convertible<bool, decltype(x != nullptr)>()>;
+              convertible<decltype(x == nullptr), bool>(),
+              convertible<decltype(x != nullptr), bool>()>;
 };
 }  // namespace detail
 
@@ -184,18 +184,13 @@ constexpr bool callable() {
 //------------------------------------------------------------------------------
 namespace DETAIL_NS {
 struct Printable : Concept {
-  template<class T>
+  template <class T>
   auto require(T&& x) -> list<
-    same<std::ostream&,
-      decltype(
-        std::declval<std::ostream&>() << x
-      )
-      >()
-  >;
+      same<std::ostream&, decltype(std::declval<std::ostream&>() << x)>()>;
 };
 }
 
-template<class T>
+template <class T>
 constexpr bool printable() {
   return models<DETAIL_NS::Printable, T>();
 }
