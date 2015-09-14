@@ -237,7 +237,7 @@ struct IteratorRange : Concept {
   template <class First, class Last>
   auto require(First&&, Last && )
       -> list<weak_iterator<First>(), regular<Last>(),
-              equality_comparable2<First, Last>()>;
+              equality_comparable<First, Last>()>;
 };
 }
 

@@ -62,7 +62,7 @@ struct EqualityComparable2 : Concept {
 }  // namespace detail
 
 template <class U, class V>
-constexpr bool equality_comparable2() {
+constexpr bool equality_comparable() {
   return models<DETAIL_NS::EqualityComparable2, U, V>();
 }
 
